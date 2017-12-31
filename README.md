@@ -12,6 +12,7 @@ r := NewReader(strings.NewReader(s), int64(size))
 
 // Start a goroutine printing progress
 go func(){
+	defer log.Printf("done")
 	interval := 1 * time.Second
 	ticker := progress.NewTicker(r, interval)
 	for {
@@ -21,7 +22,7 @@ go func(){
 				// done
 				return
 			}
-			log.Printf("%f%% remaining, about %v", tick.Percent(). tick.Remaining())
+			log.Printf("%f%% completed, about %v remaining", tick.Percent(). tick.Remaining())
 		}
 	}
 }()
