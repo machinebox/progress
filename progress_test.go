@@ -45,12 +45,12 @@ func TestTicker(t *testing.T) {
 func TestProgress(t *testing.T) {
 	is := is.New(t)
 
-	is.Equal((Progress{N: 1, Length: 2}).Complete(), false)
-	is.Equal((Progress{N: 2, Length: 2}).Complete(), true)
+	is.Equal((Progress{n: 1, length: 2}).Complete(), false)
+	is.Equal((Progress{n: 2, length: 2}).Complete(), true)
 
-	is.Equal((Progress{N: 0, Length: 2}).Percent(), 0.0)
-	is.Equal((Progress{N: 1, Length: 2}).Percent(), 50.0)
-	is.Equal((Progress{N: 2, Length: 2}).Percent(), 100.0)
+	is.Equal((Progress{n: 0, length: 2}).Percent(), 0.0)
+	is.Equal((Progress{n: 1, length: 2}).Percent(), 50.0)
+	is.Equal((Progress{n: 2, length: 2}).Percent(), 100.0)
 
 }
 

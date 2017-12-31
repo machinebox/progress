@@ -34,20 +34,20 @@ func Complete(c Counter) bool {
 
 // Progress represents a moment of progress.
 type Progress struct {
-	N         int64
-	Length    int64
-	Remaining time.Duration
-	Estimated time.Time
+	n         int64
+	length    int64
+	remaining time.Duration
+	estimated time.Time
 }
 
 // Complete gets whether the operation is complete or not.
 func (p Progress) Complete() bool {
-	return p.N >= p.Length
+	return p.n >= p.length
 }
 
 // Percent calculates the percentage complete.
 func (p Progress) Percent() float64 {
-	n, length := float64(p.N), float64(p.Length)
+	n, length := float64(p.n), float64(p.length)
 	if n == 0 {
 		return 0
 	}
@@ -55,6 +55,18 @@ func (p Progress) Percent() float64 {
 		return 100
 	}
 	return 100 / (length / n)
+}
+
+// Remaining gets the amount of time until the operation is
+// expected to be finished. Use Estimated to get a fixed completion time.
+func (p Progress) Remaining() time.Duration {
+	return p.remaining
+}
+
+// Estimated gets the time at which the operation is expected
+// to finish. Use Reamining to get a Duration.
+func (p Progress) Estimated() time.Time {
+	return p.estimated
 }
 
 // NewTicker gets a channel on which ticks of Progress are sent
@@ -67,8 +79,8 @@ func NewTicker(c Counter, d time.Duration) <-chan Progress {
 		for {
 			n, length := c.N(), c.Len()
 			p := Progress{
-				N:      n,
-				Length: length,
+				n:      n,
+				length: length,
 			}
 			nF, lengthF := float64(n), float64(length)
 			if started.IsZero() {
@@ -80,8 +92,8 @@ func NewTicker(c Counter, d time.Duration) <-chan Progress {
 				ratio := nF / lengthF
 				past := now.Sub(started)
 				future := time.Duration(float64(past) / ratio)
-				p.Estimated = started.Add(future)
-				p.Remaining = p.Estimated.Sub(now)
+				p.estimated = started.Add(future)
+				p.remaining = p.estimated.Sub(now)
 			}
 			ch <- p
 			if n >= length {

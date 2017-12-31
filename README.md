@@ -12,7 +12,8 @@ r := NewReader(strings.NewReader(s), int64(size))
 
 // Start a goroutine printing progress
 go func(){
-	ticker := progress.NewTicker(r, 1 * time.Second)
+	interval := 1 * time.Second
+	ticker := progress.NewTicker(r, interval)
 	for {
 		select {
 		case tick, ok := <-ticker:
@@ -20,7 +21,7 @@ go func(){
 				// done
 				return
 			}
-			log.Printf("%f%% remaining, about %v", tick.Percent(). tick.Remaining)
+			log.Printf("%f%% remaining, about %v", tick.Percent(). tick.Remaining())
 		}
 	}
 }()
