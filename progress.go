@@ -45,6 +45,18 @@ func (p Progress) Complete() bool {
 	return p.N >= p.Length
 }
 
+// Percent calculates the percentage complete.
+func (p Progress) Percent() float64 {
+	n, length := float64(p.N), float64(p.Length)
+	if n == 0 {
+		return 0
+	}
+	if n == length {
+		return 100
+	}
+	return 100 / (length / n)
+}
+
 // NewTicker gets a channel on which ticks of Progress are sent
 // at duration d intervals until the operation is complete.
 func NewTicker(c Counter, d time.Duration) <-chan Progress {

@@ -48,6 +48,10 @@ func TestProgress(t *testing.T) {
 	is.Equal((Progress{N: 1, Length: 2}).Complete(), false)
 	is.Equal((Progress{N: 2, Length: 2}).Complete(), true)
 
+	is.Equal((Progress{N: 0, Length: 2}).Percent(), 0.0)
+	is.Equal((Progress{N: 1, Length: 2}).Percent(), 50.0)
+	is.Equal((Progress{N: 2, Length: 2}).Percent(), 100.0)
+
 }
 
 func XTestTickerTimes(t *testing.T) {
