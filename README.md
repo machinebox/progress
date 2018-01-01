@@ -5,10 +5,14 @@
 ## Usage
 
 ```go
+import (
+	"github.com/machinebox/progress"
+)
+
 // get a reader and the total expected number of bytes
 s := `Now that's what I call progress`
 size := len(s)
-r := NewReader(strings.NewReader(s), int64(size))
+r := progress.NewReader(strings.NewReader(s), int64(size))
 
 // Start a goroutine printing progress
 go func(){
