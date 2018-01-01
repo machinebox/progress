@@ -1,4 +1,4 @@
-# `github.com/machinebox/progress`
+# github.com/machinebox/progress
 
 `io.Reader` and `io.Writer` with progress and remaining time estimation.
 
