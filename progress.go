@@ -7,18 +7,17 @@
 //  r := progress.NewReader(strings.NewReader(s))
 //
 //  // Start a goroutine printing progress
-//  go func(){
-//  	defer log.Printf("done")
-//  	interval := 1 * time.Second
-//  	progressChan := progress.NewTicker(ctx, r, size, interval)
+//  go func() {
+//  	ctx := context.Background()
+//  	progressChan := progress.NewTicker(ctx, r, size, 1*time.Second)
 //  	for {
 //  		select {
 //  		case progress, ok := <-progressChan:
 //  			if !ok {
-//  				// if ok is false, the process is finished
+//  				fmt.Println("\rdownload has completed")
 //  				return
 //  			}
-//  			log.Printf("about %v remaining...", progress.Remaining())
+//  			fmt.Printf("\r%v remaining...", progress.Remaining().Round(time.Second))
 //  		}
 //  	}
 //  }()
@@ -86,12 +85,17 @@ func (p Progress) Percent() float64 {
 
 // Remaining gets the amount of time until the operation is
 // expected to be finished. Use Estimated to get a fixed completion time.
+// Returns -1 if no estimate is available.
 func (p Progress) Remaining() time.Duration {
+	if p.estimated.IsZero() {
+		return -1
+	}
 	return p.estimated.Sub(time.Now())
 }
 
 // Estimated gets the time at which the operation is expected
 // to finish. Use Reamining to get a Duration.
+// Estimated().IsZero() is true if no estimate is available.
 func (p Progress) Estimated() time.Time {
 	return p.estimated
 }

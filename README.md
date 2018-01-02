@@ -13,18 +13,17 @@ size := len(s)
 r := progress.NewReader(strings.NewReader(s))
 
 // Start a goroutine printing progress
-go func(){
-	defer log.Printf("done")
-	interval := 1 * time.Second
-	progressChan := progress.NewTicker(ctx, r, size, interval)
+go func() {
+	ctx := context.Background()
+	progressChan := progress.NewTicker(ctx, r, size, 1*time.Second)
 	for {
 		select {
 		case progress, ok := <-progressChan:
 			if !ok {
-				// if ok is false, the process is finished
+				fmt.Println("\rdownload has completed")
 				return
 			}
-			log.Printf("about %v remaining...", progress.Remaining())
+			fmt.Printf("\r%v remaining...", progress.Remaining().Round(time.Second))
 		}
 	}
 }()
