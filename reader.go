@@ -7,18 +7,16 @@ import (
 
 // Reader counts the bytes read through it.
 type Reader struct {
-	r      io.Reader
-	n      int64
-	length int64
+	r io.Reader
+	n int64
 }
 
 // NewReader makes a new Reader that counts the bytes
 // read through it.
 // The length should be set to the expected number of bytes to be read.
-func NewReader(r io.Reader, length int64) *Reader {
+func NewReader(r io.Reader) *Reader {
 	return &Reader{
-		r:      r,
-		length: length,
+		r: r,
 	}
 }
 
@@ -32,9 +30,4 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 // so far.
 func (r *Reader) N() int64 {
 	return atomic.LoadInt64(&r.n)
-}
-
-// Len gets the total number of bytes expected.
-func (r *Reader) Len() int64 {
-	return atomic.LoadInt64(&r.length)
 }

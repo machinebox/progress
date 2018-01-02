@@ -18,7 +18,7 @@ func TestNewWriter(t *testing.T) {
 	)
 
 	var buf bytes.Buffer
-	w := NewWriter(&buf, 5)
+	w := NewWriter(&buf)
 
 	n, err := w.Write([]byte("1"))
 	is.NoErr(err)
