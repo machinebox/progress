@@ -77,7 +77,7 @@ func (p Progress) Percent() float64 {
 	if p.n == 0 {
 		return 0
 	}
-	if p.n == p.size {
+	if p.n >= p.size {
 		return 100
 	}
 	return 100.0 / (p.size / p.n)
