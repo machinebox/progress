@@ -34,6 +34,7 @@ func TestNewReader(t *testing.T) {
 
 	// read to the end
 	b, err := ioutil.ReadAll(r)
+	is.NoErr(err)
 	is.Equal(len(b), 29)       // len(b)
 	is.Equal(r.N(), int64(31)) // r.N()
 
