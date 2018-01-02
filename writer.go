@@ -13,7 +13,6 @@ type Writer struct {
 
 // NewWriter gets a Writer that counts the number
 // of bytes written.
-// The length should be set to the expected number of bytes to be written.
 func NewWriter(w io.Writer) *Writer {
 	return &Writer{
 		w: w,

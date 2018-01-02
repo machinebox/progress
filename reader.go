@@ -13,7 +13,6 @@ type Reader struct {
 
 // NewReader makes a new Reader that counts the bytes
 // read through it.
-// The length should be set to the expected number of bytes to be read.
 func NewReader(r io.Reader) *Reader {
 	return &Reader{
 		r: r,
