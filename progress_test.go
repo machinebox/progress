@@ -2,6 +2,7 @@ package progress
 
 import (
 	"context"
+	"log"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -15,13 +16,15 @@ func TestTicker(t *testing.T) {
 	defer cancel()
 	c := &counter{}
 	var size int64 = 200
-	ticker := NewTicker(ctx, c, size, 10*time.Millisecond)
+	ticker := NewTicker(ctx, c, size, 5*time.Millisecond)
 	var events []Progress
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
 		for {
 			select {
+			case <-time.After(1 * time.Second):
+				is.Fail() // timed out
 			case tick, ok := <-ticker:
 				if !ok {
 					return
@@ -30,6 +33,8 @@ func TestTicker(t *testing.T) {
 			}
 		}
 	}()
+
+	// simulate reading
 	go func() {
 		for {
 			n := c.N() + 50
@@ -37,12 +42,13 @@ func TestTicker(t *testing.T) {
 			if n >= size {
 				return
 			}
-			time.Sleep(20 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 		}
 	}()
 	// wait for it to finish
 	<-done
-	is.True(len(events) > 5) // should be >5 events
+	log.Println(events)
+	is.True(len(events) >= 5) // should be >5 events depending on timings
 	is.Equal(events[len(events)-1].Complete(), true)
 }
 
