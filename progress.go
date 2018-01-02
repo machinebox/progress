@@ -14,7 +14,7 @@
 //  		select {
 //  		case progress, ok := <-progressChan:
 //  			if !ok {
-//  				fmt.Println("\rdownload has completed")
+//  				fmt.Println("\rdownload is completed")
 //  				return
 //  			}
 //  			fmt.Printf("\r%v remaining...", progress.Remaining().Round(time.Second))
