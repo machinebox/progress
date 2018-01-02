@@ -53,10 +53,12 @@ func TestProgress(t *testing.T) {
 
 	is.Equal((Progress{n: 1}).N(), int64(1))
 	is.Equal((Progress{estimated: now}).Estimated(), now)
-	is.Equal((Progress{remaining: 1 * time.Minute}).Remaining(), 1*time.Minute)
+	is.Equal((Progress{estimated: now.Add(1 * time.Minute)}).Remaining().Round(time.Minute), 1*time.Minute)
 	is.Equal((Progress{size: 10}).Size(), int64(10))
+
 	is.Equal((Progress{n: 1, size: 2}).Complete(), false)
 	is.Equal((Progress{n: 2, size: 2}).Complete(), true)
+
 	is.Equal((Progress{n: 0, size: 2}).Percent(), 0.0)
 	is.Equal((Progress{n: 1, size: 2}).Percent(), 50.0)
 	is.Equal((Progress{n: 2, size: 2}).Percent(), 100.0)
