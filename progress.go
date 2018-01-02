@@ -1,6 +1,7 @@
 package progress
 
 import (
+	"context"
 	"time"
 )
 
@@ -8,46 +9,38 @@ import (
 // Both Reader and Writer are Counter types.
 type Counter interface {
 	// N is the number of bytes that have been read
-	// so far.
+	// or written so far.
 	N() int64
-	// Len is the total number of bytes expected.
-	Len() int64
-}
-
-// Percent calculates the percentage complete for the
-// specified Counter.
-func Percent(c Counter) float64 {
-	n, length := float64(c.N()), float64(c.Len())
-	if n == 0 {
-		return 0
-	}
-	if n == length {
-		return 100
-	}
-	return 100 / (length / n)
-}
-
-// Complete gets whether the Counter is complete or not.
-func Complete(c Counter) bool {
-	return c.N() >= c.Len()
 }
 
 // Progress represents a moment of progress.
 type Progress struct {
 	n         int64
-	length    int64
+	size      int64
 	remaining time.Duration
 	estimated time.Time
 }
 
+// N gets the total number of bytes read or written
+// so far.
+func (p Progress) N() int64 {
+	return p.n
+}
+
+// Size gets the total number of bytes that are expected to
+// be read or written.
+func (p Progress) Size() int64 {
+	return p.size
+}
+
 // Complete gets whether the operation is complete or not.
 func (p Progress) Complete() bool {
-	return p.n >= p.length
+	return p.n >= p.size
 }
 
 // Percent calculates the percentage complete.
 func (p Progress) Percent() float64 {
-	n, length := float64(p.n), float64(p.length)
+	n, length := float64(p.n), float64(p.size)
 	if n == 0 {
 		return 0
 	}
@@ -71,35 +64,42 @@ func (p Progress) Estimated() time.Time {
 
 // NewTicker gets a channel on which ticks of Progress are sent
 // at duration d intervals until the operation is complete.
-func NewTicker(c Counter, d time.Duration) <-chan Progress {
-	var started time.Time
-	ch := make(chan Progress)
+// The size is the total number of expected bytes being read or written.
+// Cancellable via context.
+func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration) <-chan Progress {
+	var (
+		started time.Time
+		ch      = make(chan Progress)
+	)
 	go func() {
 		defer close(ch)
 		for {
-			n, length := c.N(), c.Len()
-			p := Progress{
-				n:      n,
-				length: length,
-			}
-			nF, lengthF := float64(n), float64(length)
-			if started.IsZero() {
-				if n > 0 {
-					started = time.Now()
-				}
-			} else {
-				now := time.Now()
-				ratio := nF / lengthF
-				past := now.Sub(started)
-				future := time.Duration(float64(past) / ratio)
-				p.estimated = started.Add(future)
-				p.remaining = p.estimated.Sub(now)
-			}
-			ch <- p
-			if n >= length {
+			select {
+			case <-ctx.Done():
 				return
+			case <-time.After(d):
+				progress := Progress{
+					n:    counter.N(),
+					size: size,
+				}
+				if started.IsZero() {
+					if progress.n > 0 {
+						started = time.Now()
+					}
+				} else {
+					now := time.Now()
+					nF, lengthF := float64(progress.n), float64(size)
+					ratio := nF / lengthF
+					past := now.Sub(started)
+					future := time.Duration(float64(past) / ratio)
+					progress.estimated = started.Add(future)
+					progress.remaining = progress.estimated.Sub(now)
+				}
+				ch <- progress
+				if progress.Complete() {
+					return
+				}
 			}
-			time.Sleep(d)
 		}
 	}()
 	return ch
