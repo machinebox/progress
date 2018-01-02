@@ -1,3 +1,32 @@
+// Package progress provides io.Reader and io.Writer with progress and remaining time estimation.
+//  ctx := context.Background()
+//
+//  // get a reader and the total expected number of bytes
+//  s := `Now that's what I call progress`
+//  size := len(s)
+//  r := progress.NewReader(strings.NewReader(s))
+//
+//  // Start a goroutine printing progress
+//  go func(){
+//  	defer log.Printf("done")
+//  	interval := 1 * time.Second
+//  	progressChan := progress.NewTicker(ctx, r, size, interval)
+//  	for {
+//  		select {
+//  		case progress, ok := <-progressChan:
+//  			if !ok {
+//  				// if ok is false, the process is finished
+//  				return
+//  			}
+//  			log.Printf("about %v remaining...", progress.Remaining())
+//  		}
+//  	}
+//  }()
+//
+//  // use the Reader as normal
+//  if _, err := io.Copy(dest, r); err != nil {
+//  	log.Fatalln(err)
+//  }
 package progress
 
 import (
