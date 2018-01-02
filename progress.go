@@ -128,9 +128,8 @@ func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration
 						started = time.Now()
 					}
 				} else {
-					now := time.Now()
 					ratio := progress.n / progress.size
-					past := float64(now.Sub(started))
+					past := float64(time.Now().Sub(started))
 					future := time.Duration(past / ratio)
 					progress.estimated = started.Add(future)
 				}
