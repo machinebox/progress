@@ -38,6 +38,6 @@ if _, err := io.Copy(dest, r); err != nil {
 ```
 
 1. Wrap an `io.Reader` or `io.Writer` with `NewReader` and `NewWriter` respectively
-1. You must specify the total number of bytes that will be read or written - if you don't know this, you cannot judge progress
+1. You should specify the total number of bytes if known - otherwise, `Percent` and `Remaining` helpers will not work
 1. Start a Goroutine to periodically check the progress, and do something with it - like log it
 1. Use the readers and writers as normal
