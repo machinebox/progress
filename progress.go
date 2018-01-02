@@ -8,18 +8,18 @@
 //
 //  // Start a goroutine printing progress
 //  go func() {
-//  	ctx := context.Background()
-//  	progressChan := progress.NewTicker(ctx, r, size, 1*time.Second)
-//  	for {
-//  		select {
-//  		case progress, ok := <-progressChan:
-//  			if !ok {
-//  				fmt.Println("\rdownload is completed")
-//  				return
-//  			}
-//  			fmt.Printf("\r%v remaining...", progress.Remaining().Round(time.Second))
-//  		}
-//  	}
+//      ctx := context.Background()
+//      progressChan := progress.NewTicker(ctx, r, size, 1*time.Second)
+//      for {
+//          select {
+//          case progress, ok := <-progressChan:
+//              if !ok {
+//                  fmt.Println("\rdownload is completed")
+//                  return
+//              }
+//              fmt.Printf("\r%v remaining...", progress.Remaining().Round(time.Second))
+//          }
+//      }
 //  }()
 //
 //  // use the Reader as normal
@@ -130,8 +130,8 @@ func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration
 				} else {
 					ratio := progress.n / progress.size
 					past := float64(time.Now().Sub(started))
-					future := time.Duration(past / ratio)
-					progress.estimated = started.Add(future)
+					total := time.Duration(past / ratio)
+					progress.estimated = started.Add(total)
 				}
 				ch <- progress
 				if progress.Complete() {

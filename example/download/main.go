@@ -39,9 +39,9 @@ func run(args ...string) error {
 	if err != nil {
 		return errors.Wrapf(err, "bad Content-Length %q", contentLengthHeader)
 	}
+	ctx := context.Background()
 	r := progress.NewReader(resp.Body)
 	go func() {
-		ctx := context.Background()
 		progressChan := progress.NewTicker(ctx, r, size, 1*time.Second)
 		for {
 			select {
