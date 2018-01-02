@@ -94,7 +94,7 @@ func (p Progress) Remaining() time.Duration {
 }
 
 // Estimated gets the time at which the operation is expected
-// to finish. Use Reamining to get a Duration.
+// to finish. Use Remaining to get a Duration.
 // Estimated().IsZero() is true if no estimate is available.
 func (p Progress) Estimated() time.Time {
 	return p.estimated
