@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 )
 
-// Writer counts the bytes written.
+// Writer counts the bytes written through it.
 type Writer struct {
 	w io.Writer
 	n int64
