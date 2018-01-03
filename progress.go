@@ -62,11 +62,6 @@ func (p Progress) Size() int64 {
 	return int64(p.size)
 }
 
-// Started gets whether the operation has started or not.
-func (p Progress) Started() bool {
-	return p.n > 0
-}
-
 // Complete gets whether the operation is complete or not.
 func (p Progress) Complete() bool {
 	return p.n >= p.size
@@ -108,7 +103,7 @@ func (p Progress) Estimated() time.Time {
 // If the context cancels the operation, the channel is closed.
 func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration) <-chan Progress {
 	var (
-		started time.Time
+		started = time.Now()
 		ch      = make(chan Progress)
 	)
 	go func() {
@@ -123,13 +118,9 @@ func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration
 					n:    float64(counter.N()),
 					size: float64(size),
 				}
-				if started.IsZero() {
-					if progress.Started() {
-						started = time.Now()
-					}
-				} else {
-					ratio := progress.n / progress.size
-					past := float64(time.Now().Sub(started))
+				ratio := progress.n / progress.size
+				past := float64(time.Now().Sub(started))
+				if progress.n > 0.0 {
 					total := time.Duration(past / ratio)
 					progress.estimated = started.Add(total)
 				}
