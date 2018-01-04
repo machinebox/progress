@@ -30,6 +30,7 @@ package progress
 
 import (
 	"context"
+	"io"
 	"time"
 )
 
@@ -41,6 +42,9 @@ type Counter interface {
 	// read or written.
 	// For other contexts, the number may be anything.
 	N() int64
+	// Err gets the last error from the Reader or Writer.
+	// When the process is finished, this will be io.EOF.
+	Err() error
 }
 
 // Progress represents a moment of progress.
@@ -48,6 +52,7 @@ type Progress struct {
 	n         float64
 	size      float64
 	estimated time.Time
+	err       error
 }
 
 // N gets the total number of bytes read or written
@@ -68,7 +73,14 @@ func (p Progress) Started() bool {
 }
 
 // Complete gets whether the operation is complete or not.
+// Always returns false if the Size is unknown (-1).
 func (p Progress) Complete() bool {
+	if p.err == io.EOF {
+		return true
+	}
+	if p.size == -1 {
+		return false
+	}
 	return p.n >= p.size
 }
 
@@ -122,6 +134,7 @@ func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration
 				progress := Progress{
 					n:    float64(counter.N()),
 					size: float64(size),
+					err:  counter.Err(),
 				}
 				if started.IsZero() {
 					if progress.Started() {
