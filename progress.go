@@ -144,7 +144,10 @@ func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration
 					ratio := progress.n / progress.size
 					past := float64(time.Now().Sub(started))
 					total := time.Duration(past / ratio)
-					progress.estimated = started.Add(total)
+					if total < 168*time.Hour {
+						// don't send estimates that are beyond a week
+						progress.estimated = started.Add(total)
+					}
 				}
 				ch <- progress
 				if progress.Complete() {
