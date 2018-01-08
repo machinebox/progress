@@ -16,16 +16,10 @@ r := progress.NewReader(strings.NewReader(s))
 go func() {
 	ctx := context.Background()
 	progressChan := progress.NewTicker(ctx, r, size, 1*time.Second)
-	for {
-		select {
-		case progress, ok := <-progressChan:
-			if !ok {
-				fmt.Println("\rdownload is completed")
-				return
-			}
-			fmt.Printf("\r%v remaining...", progress.Remaining().Round(time.Second))
-		}
-	}
+    for p := range progressChan {
+        fmt.Printf("\r%v remaining...", p.Remaining().Round(time.Second))
+    }
+    fmt.Println("\rdownload is completed")
 }()
 
 // use the Reader as normal
