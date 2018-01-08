@@ -43,16 +43,10 @@ func run(args ...string) error {
 	r := progress.NewReader(resp.Body)
 	go func() {
 		progressChan := progress.NewTicker(ctx, r, size, 1*time.Second)
-		for {
-			select {
-			case progress, ok := <-progressChan:
-				if !ok {
-					fmt.Println("\rdownload is completed")
-					return
-				}
-				fmt.Printf("\r%v remaining...", progress.Remaining().Round(time.Second))
-			}
+		for p := range progressChan {
+			fmt.Printf("\r%v remaining...", p.Remaining().Round(time.Second))
 		}
+		fmt.Println("\rdownload is completed")
 	}()
 	if _, err := io.Copy(ioutil.Discard, r); err != nil {
 		return errors.Wrap(err, "failed to read body")

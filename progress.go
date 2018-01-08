@@ -97,7 +97,7 @@ func (p Progress) Remaining() time.Duration {
 	if p.estimated.IsZero() {
 		return -1
 	}
-	return p.estimated.Sub(time.Now())
+	return time.Until(p.estimated)
 }
 
 // Estimated gets the time at which the operation is expected
@@ -132,7 +132,7 @@ func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration
 					err:  counter.Err(),
 				}
 				ratio := progress.n / progress.size
-				past := float64(time.Now().Sub(started))
+				past := float64(time.Since(started))
 				if progress.n > 0.0 {
 					total := time.Duration(past / ratio)
 					if total < 168*time.Hour {
