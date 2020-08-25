@@ -34,18 +34,14 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 // N gets the number of bytes that have been written
 // so far.
 func (w *Writer) N() int64 {
-	var n int64
 	w.lock.RLock()
-	n = w.n
-	w.lock.RUnlock()
-	return n
+	defer w.lock.RUnlock()
+	return w.n
 }
 
 // Err gets the last error from the Writer.
 func (w *Writer) Err() error {
-	var err error
 	w.lock.RLock()
-	err = w.err
-	w.lock.RUnlock()
-	return err
+	defer w.lock.RUnlock()
+	return w.err
 }
