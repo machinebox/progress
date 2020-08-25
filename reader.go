@@ -34,18 +34,14 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 // N gets the number of bytes that have been read
 // so far.
 func (r *Reader) N() int64 {
-	var n int64
 	r.lock.RLock()
-	n = r.n
-	r.lock.RUnlock()
-	return n
+	defer r.lock.RUnlock()
+	return r.n
 }
 
 // Err gets the last error from the Reader.
 func (r *Reader) Err() error {
-	var err error
 	r.lock.RLock()
-	err = r.err
-	r.lock.RUnlock()
-	return err
+	defer r.lock.RUnlock()
+	return r.err
 }
