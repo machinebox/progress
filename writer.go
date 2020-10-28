@@ -23,29 +23,25 @@ func NewWriter(w io.Writer) *Writer {
 }
 
 func (w *Writer) Write(p []byte) (n int, err error) {
-	n, err = w.w.Write(p)
 	w.lock.Lock()
+	defer w.lock.Unlock()
+	n, err = w.w.Write(p)
 	w.n += int64(n)
 	w.err = err
-	w.lock.Unlock()
-	return
+	return n, err
 }
 
 // N gets the number of bytes that have been written
 // so far.
 func (w *Writer) N() int64 {
-	var n int64
 	w.lock.RLock()
-	n = w.n
-	w.lock.RUnlock()
-	return n
+	defer w.lock.RUnlock()
+	return w.n
 }
 
 // Err gets the last error from the Writer.
 func (w *Writer) Err() error {
-	var err error
 	w.lock.RLock()
-	err = w.err
-	w.lock.RUnlock()
-	return err
+	defer w.lock.RUnlock()
+	return w.err
 }

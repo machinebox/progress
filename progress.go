@@ -138,6 +138,9 @@ func NewTicker(ctx context.Context, counter Counter, size int64, d time.Duration
 				if progress.Complete() {
 					return
 				}
+				if progress.err != nil {
+					return
+				}
 			}
 		}
 	}()
